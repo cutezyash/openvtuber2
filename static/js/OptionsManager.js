@@ -9,6 +9,21 @@ class OptionsManager {
             const name = elem.id;
             this.options[name] = elem;
         }
+
+        this.fs = require("fs");
+        var jsonStr = this.readFile("./config.json");
+        this.json = JSON.parse(jsonStr);
+    }
+
+    writeFile(path, output) {
+        this.fs.writeFileSync(path, output);
+    }
+    readFile(path) {
+        if(!this.fs.existsSync(path)) {
+            this.writeFile(path, "{}");
+            return "{}";
+        }
+        return this.fs.readFileSync(path, 'utf8');
     }
 
     linkHide(name, elements, checked = true) {
@@ -23,6 +38,34 @@ class OptionsManager {
         }
     }
 
+    linkCallback(name, _callback) {
+        function callback(elem) {
+            var value = null;
+            if(elem.type === "checkbox") {
+                value = elem.checked;
+            } else {
+                if(elem.value === "" || !elem.value) {
+                    var placeholder = elem.getAttribute("placeholder");
+                    if(placeholder)
+                        value = placeholder;
+                } else {
+                    value = elem.value;
+                }
+            }
+            _callback(value);
+        }
+        const elem = this.options[name];
+        elem.addEventListener("change", () => {
+            callback(elem);
+        });
+        const manual = document.getElementById(name + "-manual");
+        if (manual) {
+            manual.addEventListener("change", () => {
+                callback(elem);
+            });
+        }
+    }
+
     linkRanges() {
         for (const name in this.options) {
             if (!this.options.hasOwnProperty(name)) continue;
@@ -32,7 +75,11 @@ class OptionsManager {
             if (elem.type === "range") {
                 const manual = document.getElementById(name + "-manual");
                 if (manual) {
-                    manual.value = elem.value;
+                    const end = manual.getAttribute("end");
+                    var value = elem.value;
+                    if(end)
+                        value = value + end;
+                    manual.value = value;
                     manual.min = elem.min;
                     manual.max = elem.max;
     
@@ -48,6 +95,19 @@ class OptionsManager {
         }
     }
 
+    set(name, value) {
+        const elem = this.options[name];
+        
+        if(elem) {
+            if(elem.type === "checkbox")
+                elem.checked = value;
+            else
+                elem.value = value;    
+        }
+
+        this.json[name] = value;
+        this.writeFile("config.json", JSON.stringify(this.json));
+    } 
     get(name) {
         const elem = this.options[name];
 
@@ -55,16 +115,30 @@ class OptionsManager {
             return elem.type === "checkbox" ? elem.checked : elem.value;
         }
     }
+    getOrDefault(name, placeholder) {
+        var value = this.json[name];
+        if(value)
+            return value;
+        this.set(name, placeholder);
+        return placeholder;
+    }
 
     load() {
         for (const name in this.options) {
             if (!this.options.hasOwnProperty(name)) continue;
 
             const elem = this.options[name];
-            const stored = JSON.parse(window.localStorage.getItem(name));
+            var getItem = this.json[name];
+            var stored;
+            if(getItem) {
+                if(elem.type !== "text") {
+                    stored = JSON.parse(getItem);
+                } else
+                    stored = getItem;
+            }
             this.options[name] = elem;
 
-            if (stored !== null) {
+            if (stored) {
                 if (elem.type === "checkbox") {
                     elem.checked = stored;
                 } else {
@@ -76,7 +150,8 @@ class OptionsManager {
 
             elem.addEventListener("change", () => {
                 const value = elem.type === "checkbox" ? elem.checked : elem.value;
-                window.localStorage.setItem(name, value);
+                this.json[name] = value;
+                this.writeFile("config.json", JSON.stringify(this.json));
             });
         }
     }

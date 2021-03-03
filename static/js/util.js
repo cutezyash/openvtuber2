@@ -62,6 +62,15 @@ function random(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function parseHex(hex) {
+    return parseInt(hex.replace(/^#/, ''), 16);
+}
+
+const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 5,
+    maximumFractionDigits: 5,
+});	
+
 // Indicies:
 // 0: x, 1: y, 2: z
 function slope(xIdx, yIdx, p1, p2) {

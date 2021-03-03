@@ -3,6 +3,8 @@
 const fingers = ["Little", "Ring", "Middle", "Index", "Thumb"];
 const parts = ["Proximal", "Intermediate", "Distal"];
 
+var moveMod = {i: 0};
+
 function handposeMessage(e) {
     overlay3Ctx.clearRect(0, 0, overlay.width, overlay.height);
     const data = e.data;
@@ -32,46 +34,49 @@ function handposeMessage(e) {
     var angles = {};
     const mult = side === "left" ? -1 : 1;
 
-    for (var key in hand.annotations) {
-        if (!hand.annotations.hasOwnProperty(key)) continue;
-        if (key === "palmBase") continue;
+    vrmManager.tween(moveMod, {
+    }, () => {
+        for (var key in hand.annotations) {
+            if (!hand.annotations.hasOwnProperty(key)) continue;
+            if (key === "palmBase") continue;
 
-        var points = hand.annotations[key];
-        points.unshift(landmarks[0]);
-        var vecs = points.map(p => pointToVec(p));
+            var points = hand.annotations[key];
+            points.unshift(landmarks[0]);
+            var vecs = points.map(p => pointToVec(p));
 
-        var joints = [];
+            var joints = [];
 
-        for (var i = 1; i < vecs.length - 1; i++) {
-            const a1 = vecs[i - 1];
-            const vertex = vecs[i];
-            const a2 = vecs[i + 1];
-            joints.push(mult * getAngle(a1, vertex, a2) - Math.PI);
+            for (var i = 1; i < vecs.length - 1; i++) {
+                const a1 = vecs[i - 1];
+                const vertex = vecs[i];
+                const a2 = vecs[i + 1];
+                joints.push(mult * getAngle(a1, vertex, a2) - Math.PI);
+            }
+
+            if (key !== "middleFinger") joints.push(mult * getAngle(middleA1, middleVertex, vecs[2]));
+
+            angles[key] = joints;
         }
 
-        if (key !== "middleFinger") joints.push(mult * getAngle(middleA1, middleVertex, vecs[2]));
+        const rotations = {
+            Little: angles.pinky,
+            Ring: angles.ringFinger,
+            Middle: angles.middleFinger,
+            Index: angles.indexFinger,
+            Thumb: angles.thumb
+        };
 
-        angles[key] = joints;
-    }
+        fingers.forEach(finger => {
+            const rots = rotations[finger];
+            const axis = finger === "Thumb" ? "y" : "z";
+            const fingerObj = getFinger(side, finger);
 
-    const rotations = {
-        Little: angles.pinky,
-        Ring: angles.ringFinger,
-        Middle: angles.middleFinger,
-        Index: angles.indexFinger,
-        Thumb: angles.thumb
-    };
-
-    fingers.forEach(finger => {
-        const rots = rotations[finger];
-        const axis = finger === "Thumb" ? "y" : "z";
-        const fingerObj = getFinger(side, finger);
-
-        if (finger !== "Middle" && finger !== "Thumb") fingerObj.Proximal.x = rots[3];
-        fingerObj.Proximal[axis] = rots[0];
-        fingerObj.Intermediate[axis] = rots[1];
-        fingerObj.Distal[axis] = rots[2];
-    });
+            if (finger !== "Middle" && finger !== "Thumb") fingerObj.Proximal.x = rots[3];
+            fingerObj.Proximal[axis] = rots[0];
+            fingerObj.Intermediate[axis] = rots[1];
+            fingerObj.Distal[axis] = rots[2];
+        });
+    }, "handpose", null, 100);
 
     drawHand(data.hands, overlay3Ctx, side === "left" ? "#0f0" : "cyan");
 

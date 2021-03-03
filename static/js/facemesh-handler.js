@@ -1,6 +1,6 @@
 // FaceMesh Data Reception
 //////////////////////////
-var head = { x: 0, y: 0, z: 0, mouth: 0 };
+var head = { x: 0, y: 0, z: 0, mouth: 0, eyes: 0 };
 
 var rightEyeData = [];
 var leftEyeData = [];
@@ -46,7 +46,9 @@ function getPupil(mesh, top, right, left, gray) {
 //     446, 342, 445, 444, 443, 442, 441, 413, 464, 453, 452, 451, 450, 449, 448, 261
 // ];
 
-var nextBlinkTS = 0;
+var nextBlinkTS = -1;
+var nextEndBlinkTS = -1;
+var isBlinking = false;
 
 function facemeshMessage(e) {
     overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
@@ -71,8 +73,7 @@ function facemeshMessage(e) {
         vrmManager.tween(head, {
             x: pitch + Math.PI / 2,
             y: yaw,
-            z: roll,
-            mouth: mouthHeight / mouthWidth
+            z: roll
         }, () => {
             var neckNode = vrmManager.rotation(Bone.Neck);
             neckNode.x = head.x;
@@ -83,15 +84,35 @@ function facemeshMessage(e) {
             chestNode.x = head.x / 3;
             chestNode.y = head.y / 2;
             chestNode.z = head.z / 1.5;
-
-            vrmManager.setPreset(Preset.A, head.mouth);
-        }, "head", null, 100);
+        }, "head", null, 300);
+        vrmManager.tween(head, {
+            mouth: mouthHeight / mouthWidth
+        }, () => {
+            vrmManager.setPreset(Preset.A, head.mouth*2);
+            //vrmManager.setPreset(Preset.O, mouth_O);
+        }, "head_mouth", null, options.getOrDefault("mouth-threshold", 20));
 
         if (options.get("auto-blink")) {
-            if (Date.now() > nextBlinkTS) {
+            if(isBlinking) {
                 vrmManager.setPreset(Preset.Blink, 1);
-                nextBlinkTS = Date.now() + random(5000, 8000);
-            } else vrmManager.setPreset(Preset.Blink, 0);
+                if(nextEndBlinkTS == -1) {
+                    const time = parseInt(options.get("blink-dur-threshold"));
+                    vrmManager.setPreset(Preset.Blink, 1);
+                    nextEndBlinkTS = Date.now() + random(time, time*2);
+                } else if(Date.now() > nextEndBlinkTS) {
+                    nextEndBlinkTS = -1;
+                    isBlinking = false;
+                }
+            } else {
+                vrmManager.setPreset(Preset.Blink, 0);
+                if(nextBlinkTS == -1) {
+                    const time = parseInt(options.get("blink-threshold"));
+                    nextBlinkTS = Date.now() + random(time, time*2);
+                } else if(Date.now() > nextBlinkTS) {
+                    nextBlinkTS = -1;
+                    isBlinking = true;
+                }
+            }
         } else {
             // Right
             const rightEyeImg = clipEyeImage(ctx, mesh, 159, 145, 33, 133);
@@ -132,9 +153,18 @@ function facemeshMessage(e) {
             }
         }
 
+        if (options.get("look-at-camera")) {
+            lookAtTarget.position.x = -yaw * 10;
+        } else if (options.get("look-away-turning")) {
+            lookAtTarget.position.x = yaw * 10;
+        } else {
+            lookAtTarget.position.x = yaw;
+        }
         if (options.get("eye-track")) {
-            drawPolygon(overlayCtx, leftPoints, 1.5, "#36f");
-            drawPolygon(overlayCtx, rightPoints, 1.5, "#36f");
+            const leftPoints = leftIdxs.map(i => mesh[i]);
+            const rightPoints = rightIdxs.map(i => mesh[i]);
+            drawPolygon(overlayCtx, leftPoints, 0.1, "#36f");
+            drawPolygon(overlayCtx, rightPoints, 0.1, "#36f");
 
             var rgba = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
             var image = {
@@ -154,7 +184,11 @@ function facemeshMessage(e) {
 
                 const avgRatio = (l.ratio + r.ratio) / 2;
 
-                lookAtTarget.position.x = ((10 * avgRatio) - 5) * 5;
+                vrmManager.tween(head, {
+                    eyes: ((10 * avgRatio) - 5) * 5
+                }, () => {
+                    lookAtTarget.position.x = head.eyes;
+                }, "eyes", null, 500);
             }
         }
     }

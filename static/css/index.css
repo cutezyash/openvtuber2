@@ -4,7 +4,7 @@
 }
 
 #content {
-    margin-left: 340px;
+    margin-left: 365px;
 }
 
 #webcam,
@@ -20,9 +20,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 320px;
+    width: 350px;
     height: 100%;
     overflow: hidden;
+    overflow-y: scroll;
     background-color: #182740;
     padding: 10px;
 }

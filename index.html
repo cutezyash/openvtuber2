@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>OpenVTuber2</title>
+	<link rel="stylesheet" type="text/css" href="static/css/common.css">
+	<link rel="stylesheet" type="text/css" href="static/css/index.css">
+	<style>
+		body {
+			overflow-x: hidden;
+		}
+		.title {
+			font-size: larger;
+			border-width: 0.1em;
+			border-top: 0;
+			border-left: 0;
+			border-right: 0;
+			border-style: groove;
+			font-weight: 900;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+		.title:hover {
+			color: lightblue;
+		}
+		.right {
+			position: bold;
+			float: right;
+		}
+		.li-up {
+			margin-left: 15px;
+		}
+		input[type=checkbox] {
+			float: right;
+		}
+		input[type=number] {
+			width: 50px;
+			max-width: 50px;
+		}
+		#x-th-manual,
+		#y-th-manual,
+		#z-th-manual {
+			width: 65px;
+			max-width: 65px;
+		}
+		#az-th-manual,
+		#po-th-manual {
+			width: 125px;
+			max-width: 125px;
+		}
+		 /* Dropdown Button */
+		.dropbtn {
+			background-color: #3498DB;
+			color: white;
+			padding: 16px;
+			font-size: 16px;
+			border: none;
+			cursor: pointer;
+		}
+
+		/* Dropdown button on hover & focus */
+		.dropbtn:hover, .dropbtn:focus {
+			background-color: #2980B9;
+		}
+
+		/* The container <div> - needed to position the dropdown content */
+		.dropdown {
+			position: relative;
+			display: inline-block;
+		}
+
+		/* Dropdown Content (Hidden by Default) */
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #f1f1f1;
+			min-width: 160px;
+			box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+			z-index: 1;
+		}
+
+		/* Links inside the dropdown */
+		.dropdown-content a {
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+		}
+
+		/* Change color of dropdown links on hover */
+		.dropdown-content a:hover {background-color: #ddd}
+
+		/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+		.show {display:block;} 
+	</style>
+</head>
+
+<body>
+	<div id="options">
+		<div id="stats"></div>
+		<button>Hide</button>
+		<hr>
+		<ul>
+			<span class="title" for="character">Character</span>
+			<div class="li-up" id="section-character">
+				<li> <!--Character Section-->
+					<span class="title" size=1 for="character-eyes">Eyes</span>
+					<div class="li-up" id="section-character-eyes">
+						<span class="bold"><input class="option" id="look-at-camera" type="checkbox"> Look at Camera</span> <br/>
+						<span class="bold"><input class="option" id="look-away-turning" type="checkbox"> Look Away While Turning</span> <br/>
+						<span class="bold"><input class="option" id="auto-blink" type="checkbox" checked> Auto Blink</span> </br>
+						<span id="full-blink-th">
+							<span class="bold">Blink Time</span> 
+								<input class="option" id="blink-th" type="range" min="0" max="5000">
+								<input id="blink-th-manual" type="number" placeholder="120">
+							<br/>
+							<span class="bold">Blink Duration</span>
+								<input class="option" id="blink-dur-th" type="range" min="0" max="5000">
+								<input id="blink-dur-th-manual" type="number" placeholder="120">
+						</span>
+					</div>
+					<span class="bold">Mouth Speed</span>
+							<input class="option" id="mouth-th" type="range" min="10" max="5000">
+							<input id="mouth-th-manual" type="number" placeholder="120">
+				</li>
+				<li>
+					<input class="option" id="eye-track" type="checkbox"> <span class="bold">Eye Tracking</span>
+				</li>
+				<li><input class="option" id="facemesh" type="checkbox" checked> <span class="bold">Enable FaceMesh Detection</span></li>
+				<li><input class="option" id="posenet" type="checkbox"> <span class="bold">Enable PoseNet Detection</span></li>
+				<li><input class="option" id="handpose" type="checkbox"> <span class="bold">Enable HandPose Detection</span></li>
+			</div>
+			<br/> <!--Camera Section-->
+			<span class="title" for="camera">Camera</span>
+			<div class="li-up" id="section-camera">
+				<li>
+					<span class="bold">X</span>: <input class="option" id="x-th-manual" type="number" placeholder="0">
+					<span class="bold">Y</span>: <input class="option" id="y-th-manual" type="number" placeholder="1">
+					<span class="bold">Z</span>: <input class="option" id="z-th-manual" type="number" placeholder="0">
+				</li>
+				<li>Azimuthal Angle: <input class="option" id="az-th-manual" type="number" placeholder="0"></li>
+				<li>Polar Angle: <input class="option" id="po-th-manual" type="number" placeholder="0"></li>
+				<li>Zoom Amount: <input class="option" id="zoom-th-manual" type="number" placeholder="0"></li>
+				<li>
+					Field of View: 
+					<input class="option" id="fov-th" type="range" min="1" max="120">
+					<input id="fov-th-manual" type="number">
+				</li>
+			</div>
+			<br/> <!--Background Section-->
+			<span class="title" for="background">Background</span>
+			<div class="li-up" id="section-background">
+				<li>
+					BG Color: <input class="option" id="bg-color" type="text" placeholder="00FF00" minlength="0" maxlength="7">
+				</li>
+				<li>Light Color: <input class="option" id="light-color" type="text" placeholder="ffffff" minlength="0" maxlength="7"></li>
+				<li>
+
+				</li> 
+				<li><input class="option" id="grid" type="checkbox"> Enable Grid</li>
+			</div>
+			<br/> <!--Other/Performance Section-->
+			<span class="title" for="other">Other</span>
+			<div class="li-up" id="section-other">
+				<li><input class="option" id="hidecam" type="checkbox"> Hide Camera</li>
+				<li><input class="option" id="animations" type="checkbox" checked> Animations</li>
+				<li>
+					Max FPS: <input class="option" id="maxfps-th" type="range" min="0" max="60" value="60">
+					<input id="maxfps-th-manual" type="number" placeholder="60">
+				</li>
+			</div>
+		</ul>
+
+		<div id="peerjs">
+			<input id="dest-id" type="text" placeholder="Peer Connection ID">
+			<button onclick="call()">Call</button>
+		</div>
+
+		<br>
+
+		<div id="blink-options" style="display: none;">
+			<hr>
+			<h4>Blink Control</h4>
+			<canvas id="right-eye"></canvas>
+			<canvas id="left-eye"></canvas>
+			<br>
+			<ul>
+				<li><input class="option" id="wink" type="checkbox" checked> Allow Winking</li>
+				<li><input class="option" id="th" type="range" min="0" max="255"><input id="th-manual"
+						type="number"> th</li>
+			</ul>
+			<button onclick="resetEye()">Reset Eye Data</button>
+		</div>
+
+		<hr>
+
+		<div class="dropdown">
+			<button onclick="onDropdown()" class="dropbtn">Dropdown</button>
+			<div id="vrm-dropdown" class="dropdown-content">
+			</div>
+		</div> 
+		<button onclick="window.localStorage.clear()">Clear local storage</button>
+	</div>
+
+	<div id="content">
+		<canvas id="model" style="position: absolute;z-index: 1;"></canvas>
+		<div id="camera-container">
+			<video id="camera" playsinline autoplay muted></video>
+			<canvas id="webcam"></canvas>
+			<canvas id="overlay"></canvas>
+			<canvas id="overlay2"></canvas>
+			<canvas id="overlay3"></canvas>
+		</div>
+
+		<canvas id="eyes" style="display: none;"></canvas>
+	</div>
+
+	<script src="static/js/three/three.js"></script>
+	<script src="static/js/three/GLTFLoader.js"></script>
+	<script src="static/js/three/three-vrm.js"></script>
+	<script src="static/js/three/tween.umd.js"></script>
+	<script src="static/js/three/OrbitControls.js"></script>
+	<script src="static/js/webgazer.js"></script>
+
+	<script src="static/js/other/filters.js"></script>
+	<script src="static/js/other/peerjs.min.js"></script>
+	<script src="static/js/other/stats.min.js"></script>
+	<script src="static/js/other/lploc.js"></script>
+
+	<script src="static/js/util.js"></script>
+	<script src="static/js/VRMManager.js"></script>
+
+	<script src="static/js/WorkerManager.js"></script>
+	<script src="static/js/OptionsManager.js"></script>
+	<script src="static/js/facemesh-handler.js"></script>
+	<script src="static/js/posenet-handler.js"></script>
+	<script src="static/js/handpose-handler.js"></script>
+
+	<script src="index.js"></script>
+
+	<script>
+		var stopped = false;
+		// Options
+		//////////
+		const canvas = document.getElementById("webcam");
+		const ctx = canvas.getContext("2d");
+		const overlay = document.getElementById("overlay");
+		const overlayCtx = overlay.getContext("2d");
+		const overlay2 = document.getElementById("overlay2");
+		const overlay2Ctx = overlay2.getContext("2d");
+		const overlay3 = document.getElementById("overlay3");
+		const overlay3Ctx = overlay3.getContext("2d");
+
+		const rightEyeCanvas = document.getElementById("right-eye");
+		const rightEyeCtx = rightEyeCanvas.getContext("2d");
+		const leftEyeCanvas = document.getElementById("left-eye");
+		const leftEyeCtx = leftEyeCanvas.getContext("2d");
+
+		const eyesCanvas = document.getElementById("eyes");
+		const eyesCtx = eyesCanvas.getContext("2d");
+
+		const threads = ["main", "facemesh", "posenet", "handpose"];
+		var stats = {};
+		const statsDiv = document.getElementById("stats");
+
+		threads.forEach(thread => {
+			var panel = new Stats();
+			panel.showPanel(0);
+			panel.dom.style.position = "relative";
+			panel.dom.style.display = "inline-block";
+			statsDiv.appendChild(panel.dom);
+
+			stats[thread] = panel;
+		});
+
+		const options = new OptionsManager();
+
+		options.linkCallback("animations", (checked) => {
+		// not reloading animations checkbox on restart for manual use
+			stopped = !checked;
+		});
+		options.linkHide("auto-blink", [document.getElementById("blink-options")], false);
+		options.linkHide("auto-blink", [document.getElementById("full-blink-th")], true);
+		options.linkHide("facemesh", [overlay]);
+		options.linkHide("posenet", [overlay2]);
+		options.linkHide("handpose", [overlay3]);
+		options.linkRanges();
+
+		options.load();
+
+		var sections = {};
+		const titles = document.getElementsByClassName("title");
+		function toggleDisplayFor(titleFor) {
+			var sectionElement = document.getElementById(titleFor);
+			sectionElement.style.display = sections[titleFor] ? "" : "none";
+			options.set(titleFor+"-enabled", sections[titleFor]);
+		}
+		for(var i=0;i < titles.length;i++) {
+			const titleElement = titles[i];
+			const titleFor = "section-"+titleElement.getAttribute("for");
+			titleElement.addEventListener("click", (event) => {
+				sections[titleFor] = !sections[titleFor];
+				toggleDisplayFor(titleFor);
+			});
+			sections[titleFor] = options.getOrDefault(titleFor+"-enabled", "true") === "true" ? true : false;
+			toggleDisplayFor(titleFor);
+		}
+
+		const video = document.getElementById("camera");
+		const camContainer = document.getElementById("camera-container");
+		video.width = 640;
+		video.height = 480;
+		var camTop = (640/1.35)+"px";
+		camContainer.style.top = options.get("hidecam") ? "0" : camTop;
+		options.linkCallback("hidecam", (checked) => {
+			if(checked) {
+				camContainer.style.top = "0";
+			} else {
+				camContainer.style.top = camTop;
+			}
+		});
+		video.addEventListener("loadedmetadata", () => {
+			linkSizes([canvas, overlay, overlay2, overlay3, eyesCanvas], video);
+			renderer.setSize(video.width, video.height);
+			camera.aspect = video.width / video.height;
+			camera.fov = options.get("fov-th");
+			function fovChange(fov) {
+				camera.fov = fov;
+				camera.updateProjectionMatrix();
+			}
+			options.linkCallback("fov-th", fovChange);
+			camera.updateProjectionMatrix();
+		});
+
+		navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+			video.srcObject = stream;
+		});
+
+		var do_puploc = function (r, c, s, nperturbs, pixels, nrows, ncols, ldim) { return [-1.0, -1.0]; };
+
+		fetch("static/js/other/puploc.bin").then(res => res.arrayBuffer())
+			.then(buffer => {
+				var bytes = new Int8Array(buffer);
+				do_puploc = lploc.unpack_localizer(bytes);
+				console.log("* puploc loaded");
+			});
+
+		// three.js
+		///////////
+		const defaultWidth = 640, defaultHeight = 480;
+		const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("model") });
+		function bgColorChange(color) {
+			if(!color)
+				color = document.getElementById("bg-color").getAttribute("placeholder");
+			renderer.setClearColor(parseHex(color), 1);
+		}
+		bgColorChange(options.get("bg-color"));
+		options.linkCallback("bg-color", bgColorChange);
+		renderer.setSize(defaultWidth, defaultHeight);
+		renderer.setPixelRatio(window.devicePixelRatio);
+
+		const camera = new THREE.PerspectiveCamera(30, defaultWidth / defaultHeight, 0.1, 20.0);
+		camera.position.set(0.0, 1.5, 3.0);
+
+		const controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls.screenSpacePanning = true;
+		function onPositionChange(event) {
+			var target = controls.target;
+			var x = formatter.format(target.x);
+			var y = formatter.format(target.y);
+			var z = formatter.format(target.z);
+			options.set("x-th-manual", x);
+			options.set("y-th-manual", y);
+			options.set("z-th-manual", z);
+			var azAngle = formatter.format(controls.getAzimuthalAngle());
+			var poAngle = formatter.format(controls.getPolarAngle());
+			options.set("az-th-manual", azAngle);
+			options.set("po-th-manual", poAngle);
+			var zoom = formatter.format(controls.getSpherical().radius);
+			options.set("zoom-th-manual", zoom);
+		}
+		controls.target.set(
+			parseFloat(options.getOrDefault("x-th-manual", 0)), 
+			parseFloat(options.getOrDefault("y-th-manual", 1)), 
+			parseFloat(options.getOrDefault("z-th-manual", 0))
+		);
+		console.log(controls);
+		controls.update();
+		controls.addEventListener('change', onPositionChange);
+
+		const scene = new THREE.Scene();
+
+		var light = new THREE.DirectionalLight(0xffffff);
+		function hexToRgb(hex) {
+			hex = hex.replace("#", "");
+			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+			} : null;
+		}
+		var lightElement = document.getElementById("light-color");
+		var lightPlaceholder = lightElement.getAttribute("placeholder");
+		var lastColor = lightPlaceholder;
+		function lightColorChange(color) {
+			if(color.length < 6) {
+				lightElement.value = lightPlaceholder;
+				return;
+			}
+			if(!color)
+				color = document.getElementById("light-color").getAttribute("placeholder");
+			light.color = hexToRgb(color);
+			lastColor = color;
+		}
+		lightColorChange(options.get("light-color"));
+		options.linkCallback("light-color", lightColorChange);
+		light.position.set(1.0, 1.0, 1.0).normalize();
+		scene.add(light);
+
+		var lookAtTarget = new THREE.Object3D();
+		camera.add(lookAtTarget);
+
+		const loader = new THREE.GLTFLoader();
+		loader.crossOrigin = "anonymous";
+		var currentVrm, vrmManager;
+		
+		function loadVrm(path) {
+			if(currentVrm) {
+				scene.remove(currentVrm.scene);
+				currentVrm.scene.dispose();
+				console.log("yes");
+			}
+			loader.load(
+				path, gltf => {
+					THREE.VRMUtils.removeUnnecessaryJoints(gltf.scene);
+
+					THREE.VRM.from(gltf).then(vrm => {
+						currentVrm = vrm;
+						vrmManager = new VRMManager(vrm);
+
+						vrmManager.rotation(Bone.Hips).y = Math.PI;
+
+						vrmManager.rotation(Bone.RightHand).x = Math.PI / 6;
+						vrmManager.rotation(Bone.LeftHand).x = Math.PI / 6;
+
+						vrmManager.rotation(Bone.RightUpperArm).z = rad(-75);
+						vrmManager.rotation(Bone.RightLowerArm).z = rad(-10);
+						vrmManager.rotation(Bone.LeftUpperArm).z = rad(75);
+						vrmManager.rotation(Bone.LeftLowerArm).z = rad(10);
+
+						vrm.lookAt.target = lookAtTarget;
+
+						scene.add(vrm.scene);
+					});
+				},
+				progress => console.log("Loading... ", 100.0 * (progress.loaded / progress.total), "%"),
+				error => console.error(error)
+			);
+		}
+
+		const gridHelper = new THREE.GridHelper(10, 10);
+		var gridEnabled = true;
+		if(options.get("grid"))
+			scene.add(gridHelper);
+		function onGrid(value) {
+			if(value && !gridEnabled) {
+				scene.add(gridHelper);
+				gridEnabled = true;
+			} else if(!value && gridEnabled) {
+				scene.remove(gridHelper);
+				gridEnabled = false;
+			}
+		}
+		options.linkCallback("grid", onGrid);
+
+		const clock = new THREE.Clock();
+
+		// Workers
+		//////////
+		var leftWrist, rightWrist;
+
+		const workerManager = new WorkerManager();
+		workerManager.registerHandler("facemesh", facemeshMessage, THREE);
+		workerManager.registerHandler("posenet", posenetMessage);
+		workerManager.registerHandler("handpose", handposeMessage);
+		workerManager.startAll();
+
+		// HTML JS
+		//////////
+		function onDropdown() {
+			document.getElementById("vrm-dropdown").classList.toggle("show");
+		}
+		window.addEventListener('load', (event) => {
+			var dropdown = document.getElementById("vrm-dropdown");
+			var a = document.createElement("a");
+			a.onclick = function() {
+				alert("test");
+			};
+			dropdown.appendChild(a);
+			loadVrm("vrm/ash_new4.vrm");
+		});
+
+		// Draw Loop
+		////////////
+		function animate() {
+			// Workers
+			//////////
+			stats.main.begin();
+
+			ctx.drawImage(video, 0, 0);
+
+			if(!stopped) {
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+				if (options.get("facemesh")) {
+					stats.facemesh.begin();
+					workerManager.postMessage("facemesh", imageData);
+				}
+
+				if (options.get("posenet")) {
+					stats.posenet.begin();
+					workerManager.postMessage("posenet", imageData);
+				}
+
+				if (options.get("handpose")) {
+					stats.handpose.begin();
+					workerManager.postMessage("handpose", imageData);
+				}
+
+				// VRM
+				//////
+				const deltaTime = clock.getDelta();
+
+				if (currentVrm) {
+					currentVrm.update(deltaTime);
+					TWEEN.update();
+				}
+
+				renderer.render(scene, camera);
+			}
+
+			requestAnimationFrame(animate);
+
+			stats.main.end();
+		}
+
+		animate();
+
+	// Window Listeners
+	///////////////////
+	// window.addEventListener("resize", () => {
+	//     renderer.setPixelRatio(window.devicePixelRatio);
+	//     renderer.setSize(window.innerWidth, window.innerHeight);
+	//     camera.aspect = window.innerWidth / window.innerHeight;
+	//     camera.updateProjectionMatrix();
+	// });
+	</script>
+</body>
+
+</html>

@@ -1,9 +1,9 @@
 class WorkerManager {
     constructor() {
         this.workers = {
-            facemesh: "js/facemesh-worker.js",
-            posenet: "js/posenet-worker.js",
-            handpose: "js/handpose-worker.js"
+            facemesh: "static/js/facemesh-worker.js",
+            posenet: "static/js/posenet-worker.js",
+            handpose: "static/js/handpose-worker.js"
         };
 
         this.activeWorkers = {};
@@ -22,7 +22,8 @@ class WorkerManager {
 
     start(name) {
         this.activeWorkers[name] = new Worker(this.workers[name]);
-        const handler = this.handlers[name];
+        var usesThree = false;
+        var handler = this.handlers[name];
         if (handler) {
             this.activeWorkers[name].onmessage = e => {
                 const data = e.data;
